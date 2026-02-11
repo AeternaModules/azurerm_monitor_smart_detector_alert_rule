@@ -27,7 +27,7 @@ EOT
     scope_resource_ids  = set(string)
     severity            = string
     description         = optional(string)
-    enabled             = optional(bool, true)
+    enabled             = optional(bool) # Default: true
     tags                = optional(map(string))
     throttling_duration = optional(string)
     action_group = object({
