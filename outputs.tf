@@ -1,3 +1,7 @@
+output "monitor_smart_detector_alert_rules_id" {
+  description = "Map of id values across all monitor_smart_detector_alert_rules, keyed the same as var.monitor_smart_detector_alert_rules"
+  value       = { for k, v in azurerm_monitor_smart_detector_alert_rule.monitor_smart_detector_alert_rules : k => v.id }
+}
 output "monitor_smart_detector_alert_rules_action_group" {
   description = "Map of action_group values across all monitor_smart_detector_alert_rules, keyed the same as var.monitor_smart_detector_alert_rules"
   value       = { for k, v in azurerm_monitor_smart_detector_alert_rule.monitor_smart_detector_alert_rules : k => v.action_group }
