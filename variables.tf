@@ -27,7 +27,7 @@ EOT
     scope_resource_ids  = set(string)
     severity            = string
     description         = optional(string)
-    enabled             = optional(bool) # Default: true
+    enabled             = optional(bool)
     tags                = optional(map(string))
     throttling_duration = optional(string)
     action_group = object({
@@ -36,34 +36,13 @@ EOT
       webhook_payload = optional(string)
     })
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_smart_detector_alert_rules : (
-        length(v.name) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_smart_detector_alert_rules : (
-        contains(["FailureAnomaliesDetector", "RequestPerformanceDegradationDetector", "DependencyPerformanceDegradationDetector", "ExceptionVolumeChangedDetector", "TraceSeverityDetector", "MemoryLeakDetector"], v.detector_type)
-      )
-    ])
-    error_message = "must be one of: FailureAnomaliesDetector, RequestPerformanceDegradationDetector, DependencyPerformanceDegradationDetector, ExceptionVolumeChangedDetector, TraceSeverityDetector, MemoryLeakDetector"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.monitor_smart_detector_alert_rules : (
-        v.description == null || (length(v.description) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_monitor_smart_detector_alert_rule's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
   # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: resource_group_name
   #   condition: length(value) <= 90
   #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
@@ -78,6 +57,9 @@ EOT
   #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
   # path: resource_group_name
   #   source:    [from resourcegroups.ValidateName] !matched
+  # path: detector_type
+  #   condition: contains(["FailureAnomaliesDetector", "RequestPerformanceDegradationDetector", "DependencyPerformanceDegradationDetector", "ExceptionVolumeChangedDetector", "TraceSeverityDetector", "MemoryLeakDetector"], value)
+  #   message:   must be one of: FailureAnomaliesDetector, RequestPerformanceDegradationDetector, DependencyPerformanceDegradationDetector, ExceptionVolumeChangedDetector, TraceSeverityDetector, MemoryLeakDetector
   # path: scope_resource_ids[*]
   #   source:    [from azure.ValidateResourceID] !ok
   # path: scope_resource_ids[*]
@@ -94,6 +76,9 @@ EOT
   #   source:    [from validate.ActionGroupID] err != nil
   # path: action_group.webhook_payload
   #   source:    validation.StringIsJSON(...) - no translation rule yet, add one
+  # path: description
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: throttling_duration
   #   source:    [from commonValidate.ISO8601Duration] !ok
   # path: throttling_duration
