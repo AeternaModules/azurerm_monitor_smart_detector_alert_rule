@@ -4,7 +4,7 @@ output "monitor_smart_detector_alert_rules_id" {
 }
 output "monitor_smart_detector_alert_rules_action_group" {
   description = "Map of action_group values across all monitor_smart_detector_alert_rules, keyed the same as var.monitor_smart_detector_alert_rules"
-  value       = { for k, v in azurerm_monitor_smart_detector_alert_rule.monitor_smart_detector_alert_rules : k => v.action_group if v.action_group != null && length(v.action_group) > 0 }
+  value       = { for k, v in azurerm_monitor_smart_detector_alert_rule.monitor_smart_detector_alert_rules : k => one(v.action_group) if v.action_group != null && length(v.action_group) > 0 }
 }
 output "monitor_smart_detector_alert_rules_description" {
   description = "Map of description values across all monitor_smart_detector_alert_rules, keyed the same as var.monitor_smart_detector_alert_rules"
